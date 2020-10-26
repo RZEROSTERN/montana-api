@@ -7,8 +7,8 @@ use Validator;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
-use Laravel\Passport\Client as OClient; 
+use Illuminate\Support\Facades\Auth;
+use Laravel\Passport\Client as OClient;
 use Illuminate\Routing\Controller;
 
 class UserController extends Controller
@@ -42,13 +42,14 @@ class UserController extends Controller
         $input['password'] = bcrypt($input['password']); 
         $user = User::create($input); 
         $oClient = OClient::where('password_client', 1)->first();
+
         return $this->getTokenAndRefreshToken($oClient, $user->email, $password);
     }
 
     public function getTokenAndRefreshToken(OClient $oClient, $email, $password) { 
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client;
-        $response = $http->request('POST', 'http://127.0.0.1:8000/oauth/token', [
+        $response = $http->request('POST', route('passport.token'), [
             'form_params' => [
                 'grant_type' => 'password',
                 'client_id' => $oClient->id,
@@ -62,4 +63,41 @@ class UserController extends Controller
         $result = json_decode((string) $response->getBody(), true);
         return response()->json($result, $this->successStatus);
     }
+
+    public function refreshToken(Request $request) { 
+        $refresh_token = $request->header('Refreshtoken');
+        $oClient = OClient::where('password_client', 1)->first();
+        $http = new Client;
+
+        try {
+            $response = $http->request('POST', route('passport.token'), [
+                'form_params' => [
+                    'grant_type' => 'refresh_token',
+                    'refresh_token' => $refresh_token,
+                    'client_id' => $oClient->id,
+                    'client_secret' => $oClient->secret,
+                    'scope' => '*',
+                ],
+            ]);
+            return json_decode((string) $response->getBody(), true);
+        } catch (Exception $e) {
+            return response()->json("unauthorized", 401); 
+        }
+    }
+
+    public function details() { 
+        $user = Auth::user(); 
+        return response()->json($user, $this->successStatus); 
+    } 
+
+    public function logout(Request $request) {
+        $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
+    }
+
+    public function unauthorized() { 
+        return response()->json("unauthorized", 401); 
+    } 
 }
