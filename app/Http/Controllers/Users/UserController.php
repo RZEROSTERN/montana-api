@@ -15,6 +15,18 @@ class UserController extends Controller
 {
     public $successStatus = 200;
 
+    /**
+     * @OA\Post(
+     *      path="/login",
+     *      operationId="login",
+     *      tags={"Auth"},
+     *      summary="Login",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      )
+     * )
+     */
     public function login() { 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) { 
             $oClient = OClient::where('password_client', 1)->first();

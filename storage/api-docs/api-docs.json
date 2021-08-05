@@ -1,0 +1,32 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Montana REST API",
+        "description": "Test",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "operationId": "login",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
