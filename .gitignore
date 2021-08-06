@@ -11,3 +11,4 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 info.php
+storage/api-docs/api-docs.json

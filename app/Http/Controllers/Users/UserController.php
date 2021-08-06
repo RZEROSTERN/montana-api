@@ -21,10 +21,30 @@ class UserController extends Controller
      *      operationId="login",
      *      tags={"Auth"},
      *      summary="Login",
+     *      description="Login to Montana",
+     *      @OA\Parameter(
+     *          name="email",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="password",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation"
-     *      )
+     *      ),
+     *      @OA\Response(response=400, description="Bad Request. Invalid Data"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=500, description="Internal Server Error")
      * )
      */
     public function login() { 
@@ -37,6 +57,54 @@ class UserController extends Controller
         } 
     }
 
+    /**
+     * @OA\Post(
+     *      path="/register",
+     *      operationId="register",
+     *      tags={"Auth"},
+     *      summary="Register",
+     *      description="Register to Montana",
+     *      @OA\Parameter(
+     *          name="name",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="email",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="password",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="c_password",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation"
+     *      ),
+     *      @OA\Response(response=400, description="Bad Request. Invalid Data"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=500, description="Internal Server Error")
+     * )
+     */
     public function register(Request $request) { 
         $validator = Validator::make($request->all(), [ 
             'name' => 'required', 
