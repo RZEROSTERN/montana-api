@@ -129,7 +129,8 @@ class UserController extends Controller
     public function getTokenAndRefreshToken(OClient $oClient, $email, $password) { 
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client;
-        $response = $http->request('POST', 'http://montana-nginx/oauth/token', [
+        $oauthUrl = (env('APP_ENV') != 'local') ? route('passport.token') : env('APP_URL') . 'oauth/token';
+        $response = $http->request('POST', $oauthUrl, [
             'form_params' => [
                 'grant_type' => 'password',
                 'client_id' => $oClient->id,
@@ -148,9 +149,10 @@ class UserController extends Controller
         $refresh_token = $request->header('Refreshtoken');
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client;
+        $oauthUrl = (env('APP_ENV') != 'local') ? route('passport.token') : env('APP_URL') . 'oauth/token';
 
         try {
-            $response = $http->request('POST', route('passport.token'), [
+            $response = $http->request('POST', $oauthUrl, [
                 'form_params' => [
                     'grant_type' => 'refresh_token',
                     'refresh_token' => $refresh_token,
@@ -165,7 +167,21 @@ class UserController extends Controller
         }
     }
 
-    public function details() { 
+    /**
+     *  @OA\Post(
+     *      path="/user/profile",
+     *      operationId="user-profile",
+     *      tags={"User"},
+     *      summary="User Profile",
+     *      description="Get user's profile",
+     * 
+     *      @OA\Response(response=200, description="Successful operation"),
+     *      @OA\Response(response=400, description="Bad Request. Invalid Data"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=500, description="Internal Server Error")
+     * )
+     */
+    public function profile() { 
         $user = Auth::user(); 
         return response()->json($user, $this->successStatus); 
     } 

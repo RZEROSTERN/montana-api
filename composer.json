@@ -12,12 +12,12 @@
         "darkaonline/l5-swagger": "^8.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/guzzle": "^7.3",
         "laminas/laminas-diactoros": "^2.4",
         "laravel/framework": "^8.0",
-        "laravel/passport": "^10.0",
+        "laravel/passport": "^10.1",
         "laravel/tinker": "^2.0",
-        "symfony/psr-http-message-bridge": "^2.0"
+        "symfony/psr-http-message-bridge": "^2.1"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
