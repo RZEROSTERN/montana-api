@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Client as OClient;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Route;
 
 class UserController extends Controller
 {
@@ -48,13 +49,13 @@ class UserController extends Controller
      * )
      */
     public function login() { 
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) { 
-            $oClient = OClient::where('password_client', 1)->first();
-            return $this->getTokenAndRefreshToken($oClient, request('email'), request('password'));
-        } 
-        else { 
-            return response()->json(['error'=>'Unauthorised'], 401); 
-        } 
+        $result = $this->getTokenAndRefreshToken(request(), request('email'), request('password'));
+        
+        if($result['success'] == true) {
+            return response()->json($result, 200);
+        } else { 
+            return response()->json(['success' => false, 'error'=>'Unauthorized'], 401); 
+        }
     }
 
     /**
@@ -107,42 +108,47 @@ class UserController extends Controller
      */
     public function register(Request $request) { 
         $validator = Validator::make($request->all(), [ 
-            'name' => 'required', 
             'email' => 'required|email|unique:users', 
             'password' => 'required', 
             'c_password' => 'required|same:password', 
         ]);
 
         if ($validator->fails()) { 
-            return response()->json(['error'=>$validator->errors()], 401);            
+            return response()->json(['success' => false, 'error'=>$validator->errors()], 401);            
         }
 
         $password = $request->password;
         $input = $request->all(); 
         $input['password'] = bcrypt($input['password']); 
         $user = User::create($input); 
-        $oClient = OClient::where('password_client', 1)->first();
 
-        return $this->getTokenAndRefreshToken($oClient, $user->email, $password);
+        $result = $this->getTokenAndRefreshToken($request, $user->email, $password);
+
+        if($result['success'] == true) {
+            return response()->json($result, 200);
+        } else { 
+            return response()->json(['success' => false, 'error'=>'Unauthorized'], 401); 
+        }
     }
 
-    public function getTokenAndRefreshToken(OClient $oClient, $email, $password) { 
+    public function getTokenAndRefreshToken($request, $email, $password) { 
         $oClient = OClient::where('password_client', 1)->first();
-        $http = new Client;
-        $oauthUrl = (env('APP_ENV') != 'local') ? route('passport.token') : env('APP_URL') . 'oauth/token';
-        $response = $http->request('POST', $oauthUrl, [
-            'form_params' => [
-                'grant_type' => 'password',
-                'client_id' => $oClient->id,
-                'client_secret' => $oClient->secret,
-                'username' => $email,
-                'password' => $password,
-                'scope' => '*',
-            ],
+
+        $response = $request->request->add([
+            'grant_type' => 'password',
+            'client_id' => $oClient->id,
+            'client_secret' => $oClient->secret,
+            'username' => $email,
+            'password' => $password,
+            'scope' => '*',
         ]);
 
-        $result = json_decode((string) $response->getBody(), true);
-        return response()->json($result, $this->successStatus);
+        $response = Route::dispatch(Request::create('oauth/token', 'POST'));
+
+        $result = json_decode((string) $response->getContent(), true);
+        $result['success'] = true;
+
+        return response()->json($result, 200);
     }
 
     public function refreshToken(Request $request) { 
