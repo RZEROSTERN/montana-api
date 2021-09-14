@@ -132,9 +132,9 @@ class UserController extends Controller
     }
 
     public function getTokenAndRefreshToken($request, $email, $password) { 
-        $oClient = OClient::where('password_client', 1)->first();
+        $oClient = OClient::where('password_client', env('DEFAULT_PASSWORD_CLIENT_ID', 1))->first();
 
-        $response = $request->request->add([
+        $request->request->add([
             'grant_type' => 'password',
             'client_id' => $oClient->id,
             'client_secret' => $oClient->secret,
@@ -146,9 +146,9 @@ class UserController extends Controller
         $response = Route::dispatch(Request::create('oauth/token', 'POST'));
 
         $result = json_decode((string) $response->getContent(), true);
-        $result['success'] = true;
+        $result['success'] = (isset($result['error'])) ? false : true;
 
-        return response()->json($result, 200);
+        return $result;
     }
 
     public function refreshToken(Request $request) { 
