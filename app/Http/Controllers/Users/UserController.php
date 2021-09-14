@@ -152,25 +152,20 @@ class UserController extends Controller
     }
 
     public function refreshToken(Request $request) { 
-        $refresh_token = $request->header('Refreshtoken');
-        $oClient = OClient::where('password_client', 1)->first();
-        $http = new Client;
-        $oauthUrl = (env('APP_ENV') != 'local') ? route('passport.token') : env('APP_URL') . 'oauth/token';
+        $oClient = OClient::where('password_client', env('DEFAULT_PASSWORD_CLIENT_ID', 1))->first();
 
-        try {
-            $response = $http->request('POST', $oauthUrl, [
-                'form_params' => [
-                    'grant_type' => 'refresh_token',
-                    'refresh_token' => $refresh_token,
-                    'client_id' => $oClient->id,
-                    'client_secret' => $oClient->secret,
-                    'scope' => '*',
-                ],
-            ]);
-            return json_decode((string) $response->getBody(), true);
-        } catch (Exception $e) {
-            return response()->json("unauthorized", 401); 
-        }
+        $request->request->add([
+            'grant_type' => 'refresh_token',
+                'refresh_token' => $request->header('Refreshtoken'),
+                'client_id' => $oClient->id,
+                'client_secret' => $oClient->secret,
+                'scope' => '*',
+        ]);
+        
+        $response = Route::dispatch(Request::create('oauth/token', 'POST'));
+        $oauthResponse = json_decode($response->getContent(), true);
+
+        return response()->json(['success' => true, 'access_token' => $oauthResponse['access_token'], 'refresh_token' => $oauthResponse['refresh_token']], 200);
     }
 
     /**
