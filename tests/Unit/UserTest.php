@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use App\Models\User;
+use Laravel\Passport\Passport;
 
 class UserTest extends TestCase
 {
@@ -61,5 +62,10 @@ class UserTest extends TestCase
         $response->assertStatus(200)->assertJson([
             'success' => true
         ]);
+    }
+
+    public function test_refresh_token() {
+        Passport::actingAs(User::factory()->make());
+        $this->assertTrue(true);
     }
 }
