@@ -65,7 +65,19 @@ class UserTest extends TestCase
     }
 
     public function test_refresh_token() {
-        Passport::actingAs(User::factory()->make());
-        $this->assertTrue(true);
+        $user = User::factory()->make();
+
+        $response = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password'
+        ]);
+
+        $responseRefresh = $this->withHeaders([
+            'Refreshtoken' => $response['refresh_token']
+        ])->postJson('/api/refreshtoken');
+
+        $responseRefresh->assertStatus(200)->assertJson([
+            'success' => true
+        ]);
     }
 }
