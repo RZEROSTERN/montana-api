@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use App\Models\User;
-use Laravel\Passport\Passport;
 
 class UserTest extends TestCase
 {
