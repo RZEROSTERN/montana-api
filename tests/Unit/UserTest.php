@@ -21,10 +21,6 @@ class UserTest extends TestCase
         $this->name = $this->faker->name();
         $this->password = $this->faker->password();
         $this->email = $this->faker->email();
-
-        Artisan::call('migrate', ['-vvv' => true]);
-        Artisan::call('passport:install', ['-vvv' => true]);
-        Artisan::call('db:seed', ['-vvv' => true]);
     }
 
     public function test_login_error_with_data_ok()
@@ -44,7 +40,7 @@ class UserTest extends TestCase
         $user = User::factory()->make();
 
         $response = $this->postJson('/api/login', [
-            'email' => $user->email,
+            'email' => 'valid@test.com',
             'password' => 'password'
         ]);
 
@@ -83,9 +79,5 @@ class UserTest extends TestCase
         $responseRefresh->assertStatus(200)->assertJson([
             'success' => true
         ]);
-    }
-
-    public function test_profile_create()
-    {
     }
 }
