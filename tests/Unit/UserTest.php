@@ -13,7 +13,8 @@ class UserTest extends TestCase
     public $email;
     public $password;
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
         parent::setUp();
         $this->faker = \Faker\Factory::create();
 
@@ -26,7 +27,8 @@ class UserTest extends TestCase
         Artisan::call('db:seed', ['-vvv' => true]);
     }
 
-    public function test_login_error_with_data_ok() {
+    public function test_login_error_with_data_ok()
+    {
         $response = $this->postJson('/api/login', [
             'email' => 'invalid@test.com',
             'password' => '12345678'
@@ -37,7 +39,8 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function test_login_success() {
+    public function test_login_success()
+    {
         $user = User::factory()->make();
 
         $response = $this->postJson('/api/login', [
@@ -50,7 +53,8 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function test_register_success() {
+    public function test_register_success()
+    {
         $response = $this->postJson('/api/register', [
             'name' => $this->name,
             'email' => $this->email,
@@ -63,7 +67,8 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function test_refresh_token() {
+    public function test_refresh_token()
+    {
         $user = User::factory()->make();
 
         $response = $this->postJson('/api/login', [
@@ -78,5 +83,9 @@ class UserTest extends TestCase
         $responseRefresh->assertStatus(200)->assertJson([
             'success' => true
         ]);
+    }
+
+    public function test_profile_create()
+    {
     }
 }
