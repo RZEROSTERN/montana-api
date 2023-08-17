@@ -2,22 +2,22 @@ name: Montana
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
     container:
-      image: kirschbaumdevelopment/laravel-test-runner:7.4
+      image: kirschbaumdevelopment/laravel-test-runner:8.2
 
     services:
       mysql:
-        image: mysql:5.7
+        image: mariadb:10
         env:
           MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: delivery
+          MYSQL_DATABASE: montana
         ports:
           - 33306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
