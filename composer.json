@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.0",
         "darkaonline/l5-swagger": "^8.0",
+        "fakerphp/faker": "^1.23",
         "guzzlehttp/guzzle": "^7.3",
         "laminas/laminas-diactoros": "^2.4",
         "laravel/framework": "^10.0",

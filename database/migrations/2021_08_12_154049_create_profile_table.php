@@ -18,7 +18,7 @@ class CreateProfileTable extends Migration
             $table->integer('user_id')->references('id')->on('users');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('birth_date');
+            $table->date('birth_date');
             $table->string('bloodtype');
             $table->string('phone');
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));

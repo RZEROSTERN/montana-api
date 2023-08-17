@@ -7,15 +7,13 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
-/**
- * @OA\Info(
- *      title="Montana REST API",
- *      version="1.0.0",
- *      description="Test"
- * )
- * @OA\Server(url="http://localhost/api")
- */
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public $successStatus = 200;
+    public $unauthorizedStatus = 401;
+    public $internalServerErrorStatus = 500;
+    public $badRequestStatus = 400;
+    public $notFoundStatus = 404;
 }
