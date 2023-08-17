@@ -13,7 +13,7 @@ jobs:
       image: kirschbaumdevelopment/laravel-test-runner:8.2
 
     services:
-      mysql:
+      mariadb:
         image: mariadb:10
         env:
           MYSQL_ROOT_PASSWORD: password
