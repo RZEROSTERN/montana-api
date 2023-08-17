@@ -37,8 +37,6 @@ class UserTest extends TestCase
 
     public function test_login_success()
     {
-        $user = User::factory()->make();
-
         $response = $this->postJson('/api/login', [
             'email' => 'valid@test.com',
             'password' => 'password'
@@ -65,7 +63,7 @@ class UserTest extends TestCase
 
     public function test_refresh_token()
     {
-        $user = User::factory()->make();
+        $user = User::where(['email' => 'valid@test.com'])->get();
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
