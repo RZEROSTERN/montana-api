@@ -63,7 +63,7 @@ class UserTest extends TestCase
 
     public function test_refresh_token()
     {
-        $user = User::where(['email' => 'valid@test.com'])->get();
+        $user = User::where(['email' => 'valid@test.com'])->first();
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
