@@ -14,7 +14,6 @@ jobs:
 
     services:
       mysql:
-        alias: montana-db
         image: mariadb:10
         env:
           MYSQL_ROOT_PASSWORD: password
