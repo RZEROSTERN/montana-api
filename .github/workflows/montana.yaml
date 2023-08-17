@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: kirschbaumdevelopment/laravel-test-runner:8.2
-
     services:
       mariadb:
         image: mariadb:10
