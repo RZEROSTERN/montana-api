@@ -7,43 +7,34 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  laravel-tests:
     runs-on: ubuntu-latest
-    env:
-      DB_HOST: mariadb
-      DB_DATABASE: montana
-      DB_USERNAME: montana
-      DB_PASSWORD: password
+    container:
+      image: kirschbaumdevelopment/laravel-test-runner:8.1
+
+    sservices:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v1
         with:
-          php-version: "8.1"
-          extensions: mbstring, dom, fileinfo, mysql
-          coverage: xdebug
+          fetch-depth: 1
 
-      - name: Install dependencies
-        run: composer install --no-interaction
-
-      - name: Copy .env file
-        run: php -r "file_exists('.env') || copy('.env.ci', '.env');"
-
-      - name: Set up Docker Compose
-        run: sudo apt-get update && sudo apt-get -y install docker-compose
-
-      - name: Build and run containers
+      - name: Install composer dependencies
         run: |
-          docker-compose up -d
-          docker-compose exec -T laravel.test php artisan key:generate
-          docker-compose exec -T laravel.test php artisan migrate --seed
-          docker-compose exec -T laravel.test php artisan passport:install
+          composer install --no-scripts
 
-      - name: Run tests
-        run: docker-compose exec app php artisan test
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.ci .env
+          php artisan key:generate
 
-      - name: Shut down containers
-        run: docker-compose down
+      - name: Run Testsuite
+        run: vendor/bin/phpunit tests/
