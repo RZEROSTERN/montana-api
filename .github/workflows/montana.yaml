@@ -32,7 +32,7 @@ jobs:
 
       - name: Build and run containers
         run: |
-          docker-compose up -d --build
+          docker-compose up -d
           docker-compose exec -T laravel.test php artisan key:generate
           docker-compose exec -T laravel.test php artisan migrate --seed
           docker-compose exec -T laravel.test php artisan passport:install
