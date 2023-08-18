@@ -9,8 +9,7 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
-    container:
-      image: kirschbaumdevelopment/laravel-test-runner:8.2
+
     services:
       mariadb:
         image: mariadb:10
@@ -22,19 +21,35 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - name: Install composer dependencies
-        run: |
-          composer install --no-scripts
-      - name: Prepare Laravel Application
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: Install dependencies
         run: |
           cp .env.ci .env
+          composer install --no-interaction
+      - name: Prepare Laravel Application
+        run: |
           php artisan key:generate
           php artisan migrate
           php artisan passport:install
           php artisan db:seed
-      - name: Run Tests
-        run: composer test
+
+      - name: Start Laravel app
+        run: |
+          php artisan serve --port=80 &
+          sleep 10 # Give the server some time to start
+
+      - name: Run tests
+        run: php artisan test
+
+      - name: Stop Laravel app
+        run: |
+          pkill -f "php artisan serve"
