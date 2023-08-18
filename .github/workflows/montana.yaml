@@ -9,11 +9,6 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
-    env:
-      DB_HOST: mariadb
-      DB_DATABASE: montana
-      DB_USERNAME: root
-      DB_PASSWORD: password
 
     services:
       mariadb:
@@ -23,7 +18,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: montana
         ports:
-          - 3306/tcp
+          - 33306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       fail-fast: false
@@ -57,7 +52,11 @@ jobs:
       - name: Run Migration
         run: php artisan migrate -v
         env:
-          DB_PORT: ${{ job.services.mariadb.ports['3306'] }}
+          DB_CONNECTION: mysql
+          DB_DATABASE: montana
+          DB_PORT: 33306
+          DB_USER: root
+          DB_PASSWORD: password
 
       - name: Start Laravel app
         run: |
