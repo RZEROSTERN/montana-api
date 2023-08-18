@@ -9,6 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DB_HOST: mariadb
+      DB_DATABASE: montana
+      DB_USERNAME: montana
+      DB_PASSWORD: password
 
     steps:
       - name: Checkout code
