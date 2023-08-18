@@ -17,7 +17,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: montana
         ports:
-          - 33306:3306
+          - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -35,6 +35,7 @@ jobs:
         run: |
           cp .env.ci .env
           composer install --no-interaction
+
       - name: Prepare Laravel Application
         run: |
           php artisan key:generate
