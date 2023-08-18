@@ -14,6 +14,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: mbstring, dom, fileinfo, mysql
+          coverage: xdebug
+
+      - name: Install dependencies
+        run: composer install --no-interaction
+
       - name: Set up Docker Compose
         run: sudo apt-get update && sudo apt-get -y install docker-compose
 
