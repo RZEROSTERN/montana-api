@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use Illuminate\Database\QueryException;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\App;
 
 class UserController extends Controller
 {
@@ -39,55 +43,18 @@ class UserController extends Controller
 
         $password = $request->password;
         $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
+        $input['password'] = bcrypt($password);
         $user = User::create($input);
 
-        $result = $this->getTokenAndRefreshToken($request, $user->email, $password);
+        if (null !== $user) {
+            $result = $this->getTokenAndRefreshToken($request, $user->email, $password);
 
-        if ($result['success'] == true) {
-            return response()->json($result, $this->successStatus);
-        } else {
-            return response()->json(['success' => false, 'error' => 'Unauthorized'], $this->unauthorizedStatus);
+            if ($result['success'] == true) {
+                return response()->json($result, $this->successStatus);
+            } else {
+                return response()->json(['success' => false, 'error' => 'Unauthorized'], $this->unauthorizedStatus);
+            }
         }
-    }
-
-    public function getTokenAndRefreshToken($request, $email, $password)
-    {
-        $oClient = OClient::where('password_client', env('DEFAULT_PASSWORD_CLIENT_ID', 1))->first();
-
-        $request->request->add([
-            'grant_type' => 'password',
-            'client_id' => $oClient->id,
-            'client_secret' => $oClient->secret,
-            'username' => $email,
-            'password' => $password,
-            'scope' => '*',
-        ]);
-
-        $response = Route::dispatch(Request::create('oauth/token', 'POST'));
-
-        $result = json_decode((string) $response->getContent(), true);
-        $result['success'] = (isset($result['error'])) ? false : true;
-
-        return $result;
-    }
-
-    public function refreshToken(Request $request)
-    {
-        $oClient = OClient::where('password_client', env('DEFAULT_PASSWORD_CLIENT_ID', 1))->first();
-
-        $request->request->add([
-            'grant_type' => 'refresh_token',
-            'refresh_token' => $request->header('Refreshtoken'),
-            'client_id' => $oClient->id,
-            'client_secret' => $oClient->secret,
-            'scope' => '*',
-        ]);
-
-        $response = Route::dispatch(Request::create('oauth/token', 'POST'));
-        $oauthResponse = json_decode($response->getContent(), true);
-
-        return response()->json(['success' => true, 'access_token' => $oauthResponse['access_token'], 'refresh_token' => $oauthResponse['refresh_token']], $this->successStatus);
     }
 
     public function profile()
@@ -140,6 +107,51 @@ class UserController extends Controller
         }
     }
 
+    public function refreshToken(Request $request)
+    {
+        $oClient = OClient::where('password_client', 1)->first();
+
+        $body = [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $request->header('Refreshtoken'),
+            'client_id' => $oClient->id,
+            'client_secret' => $oClient->secret,
+            'scope' => '*',
+        ];
+
+        if (App::runningUnitTests()) {
+            $body['client_id'] = "5";
+            $body['client_secret'] = "T7gtfKg2YvAXaPmFimlY68ktHs5lGxWoDiYbDIvX";
+            $client = new HttpClient();
+
+            try {
+                $response = $client->post(env('APP_URL') . 'oauth/token', [
+                    RequestOptions::JSON => $body,
+                ]);
+
+                if ($response->getStatusCode() == 200) {
+                    $result = json_decode((string) $response->getBody()->getContents(), true);
+                    $result['success'] = true;
+                } else {
+                    $result['success'] = false;
+                }
+
+                return $result;
+            } catch (RequestException $e) {
+                $result['success'] = false;
+                $result['message'] = "Access denied";
+                return $result;
+            }
+        } else {
+            $request->request->add($body);
+            $proxy = Request::create('oauth/token', 'POST', $body);
+            $response = Route::dispatch($proxy);
+
+            $oauthResponse = json_decode($response->getContent(), true);
+            return response()->json(['success' => true, 'access_token' => $oauthResponse['access_token'], 'refresh_token' => $oauthResponse['refresh_token']], $this->successStatus);
+        }
+    }
+
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
@@ -152,5 +164,53 @@ class UserController extends Controller
     public function unauthorized()
     {
         return response()->json(["Success" => false, "message" => "Unauthorized"], 401);
+    }
+
+    private function getTokenAndRefreshToken($request, $email, $password)
+    {
+        $oClient = OClient::where('password_client', 1)->first();
+
+        $body = [
+            'grant_type' => 'password',
+            'client_id' => $oClient->id,
+            'client_secret' => $oClient->secret,
+            'username' => $email,
+            'password' => $password,
+            'scope' => '*',
+        ];
+
+        if (App::runningUnitTests()) {
+            $body['client_id'] = "5";
+            $body['client_secret'] = "T7gtfKg2YvAXaPmFimlY68ktHs5lGxWoDiYbDIvX";
+            $client = new HttpClient();
+
+            try {
+                $response = $client->post(env('APP_URL') . 'oauth/token', [
+                    RequestOptions::JSON => $body,
+                ]);
+
+                if ($response->getStatusCode() == 200) {
+                    $result = json_decode((string) $response->getBody()->getContents(), true);
+                    $result['success'] = true;
+                } else {
+                    $result['success'] = false;
+                }
+
+                return $result;
+            } catch (RequestException $e) {
+                $result['success'] = false;
+                $result['message'] = "Access denied";
+                return $result;
+            }
+        } else {
+            $request->request->add($body);
+            $proxy = Request::create('oauth/token', 'POST', $body);
+            $response = Route::dispatch($proxy);
+
+            $result = json_decode((string) $response->getContent(), true);
+            $result['success'] = (isset($result['error'])) ? false : true;
+
+            return $result;
+        }
     }
 }

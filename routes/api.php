@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Users\UserController;
 
-Route::post('login', 'App\Http\Controllers\Api\Users\UserController@login');
+Route::post('login',  [UserController::class, 'login']);
 Route::post('register', 'App\Http\Controllers\Api\Users\UserController@register');
 Route::post('refreshtoken', 'App\Http\Controllers\Api\Users\UserController@refreshToken');
 Route::get('/unauthorized', 'App\Http\Controllers\Api\Users\UserController@unauthorized');
