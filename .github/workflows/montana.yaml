@@ -32,6 +32,7 @@ jobs:
 
       - name: Build and run containers
         run: |
+          export COMPOSE_INTERACTIVE_NO_CLI=1
           docker-compose up -d --build
           docker-compose exec laravel.test php artisan key:generate
           docker-compose exec laravel.test php artisan migrate --seed
