@@ -10,6 +10,7 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
     env:
+      DB_HOST: localhost
       DB_DATABASE: montana
       DB_USERNAME: root
       DB_PASSWORD: password
