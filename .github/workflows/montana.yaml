@@ -65,8 +65,8 @@ jobs:
           php artisan serve &
           sleep 10 # Give the server some time to start
 
-      - name: Run tests
-        run: php artisan test
+      - name: Test with phpunit
+        run: vendor/bin/phpunit --coverage-text
         env:
           DB_CONNECTION: mysql
           DB_DATABASE: montana
