@@ -49,8 +49,10 @@ jobs:
       - name: Clear Config
         run: php artisan config:clear
 
-      - name: Run Migration
-        run: php artisan migrate -v
+      - name: Run Migration and install Passport
+        run: |
+          php artisan migrate -v
+          php artisan passport:install
         env:
           DB_CONNECTION: mysql
           DB_DATABASE: montana
