@@ -60,7 +60,7 @@ jobs:
 
       - name: Start Laravel app
         run: |
-          php artisan serve --port=80 &
+          php artisan serve &
           sleep 10 # Give the server some time to start
 
       - name: Run tests
