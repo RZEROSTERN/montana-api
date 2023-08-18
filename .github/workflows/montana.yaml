@@ -47,7 +47,7 @@ jobs:
 
       - name: Prepare Laravel Application
         run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php -r "file_exists('.env') || copy('.env.ci', '.env');"
           php artisan key:generate
 
       - name: Clear Config
