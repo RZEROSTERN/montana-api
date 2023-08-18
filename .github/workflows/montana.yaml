@@ -12,7 +12,7 @@ jobs:
     container:
       image: kirschbaumdevelopment/laravel-test-runner:8.1
 
-    sservices:
+    services:
       mysql:
         image: mysql:5.7
         env:
