@@ -95,8 +95,6 @@ class UserTest extends TestCase
 
     public function test_refresh_token()
     {
-        Artisan::call('db:seed', ['-vvv' => true]);
-
         $response = $this->postJson('/api/login', [
             'email' => 'valid@test.com',
             'password' => 'password'
