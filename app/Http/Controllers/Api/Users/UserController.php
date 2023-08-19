@@ -120,8 +120,6 @@ class UserController extends Controller
         ];
 
         if (App::runningUnitTests()) {
-            // $body['client_id'] = "5";
-            // $body['client_secret'] = "T7gtfKg2YvAXaPmFimlY68ktHs5lGxWoDiYbDIvX";
             $client = new HttpClient();
 
             try {
@@ -180,8 +178,6 @@ class UserController extends Controller
         ];
 
         if (App::runningUnitTests()) {
-            // $body['client_id'] = "5";
-            // $body['client_secret'] = "T7gtfKg2YvAXaPmFimlY68ktHs5lGxWoDiYbDIvX";
             $client = new HttpClient();
 
             try {
