@@ -179,6 +179,8 @@ class UserController extends Controller
             'scope' => '*',
         ];
 
+        var_dump($body);
+
         if (App::runningUnitTests()) {
             // $body['client_id'] = "5";
             // $body['client_secret'] = "T7gtfKg2YvAXaPmFimlY68ktHs5lGxWoDiYbDIvX";
