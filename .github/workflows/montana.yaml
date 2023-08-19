@@ -42,5 +42,13 @@ jobs:
       - name: Run Database Migrations
         run: php artisan migrate --database=mysql
 
+      - name: Install Passport
+        run: php artisan passport:install --database=mysql
+
+      - name: Run Server
+        run: |
+          php artisan serve
+          sleep 10
+
       - name: Run Tests
         run: php artisan test
