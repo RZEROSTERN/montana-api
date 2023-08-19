@@ -48,7 +48,7 @@ jobs:
       - name: Run Server
         run: |
           php artisan serve
-          sleep 10
+          sleep 10s
 
       - name: Run Tests
         run: php artisan test
