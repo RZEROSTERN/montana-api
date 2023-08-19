@@ -46,8 +46,7 @@ jobs:
         run: php artisan passport:install
 
       - name: Run Server
-        run: |
-          php artisan serve
+        run: php artisan serve > /dev/null 2>&1 &
 
       - name: Run Tests
         run: php artisan test
