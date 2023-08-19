@@ -24,7 +24,7 @@ class UserTest extends TestCase
         $this->password = 'password';
         $this->email = 'valid@test.com';
 
-        Artisan::call('migrate', ['-vvv' => true]);
+        Artisan::call('migrate:fresh', ['-vvv' => true]);
         Artisan::call('passport:install', ['-vvv' => true]);
         Artisan::call('db:seed', ['-vvv' => true]);
     }
