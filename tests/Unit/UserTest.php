@@ -24,13 +24,14 @@ class UserTest extends TestCase
         $this->password = 'password';
         $this->email = 'valid@test.com';
 
-        Artisan::call('migrate:fresh', ['-vvv' => true]);
+        Artisan::call('migrate', ['-vvv' => true]);
         Artisan::call('passport:install', ['-vvv' => true]);
-        Artisan::call('db:seed', ['-vvv' => true]);
     }
 
     public function test_login_error_with_data_ok()
     {
+        Artisan::call('db:seed', ['-vvv' => true]);
+
         $body =  [
             'email' => 'invalid@test.com',
             'password' => 'password'
@@ -44,6 +45,8 @@ class UserTest extends TestCase
 
     public function test_oauth_login_success()
     {
+        Artisan::call('db:seed', ['-vvv' => true]);
+
         $client = new Client();
 
         $response = $client->post(env('APP_URL') . 'oauth/token', [
@@ -95,6 +98,8 @@ class UserTest extends TestCase
 
     public function test_refresh_token()
     {
+        Artisan::call('db:seed', ['-vvv' => true]);
+
         $response = $this->postJson('/api/login', [
             'email' => 'valid@test.com',
             'password' => 'password'
