@@ -26,6 +26,7 @@ class UserTest extends TestCase
 
         Artisan::call('migrate', ['-vvv' => true]);
         Artisan::call('passport:install', ['-vvv' => true]);
+        Artisan::call('db:seed', ['-vvv' => true]);
     }
 
     public function test_login_error_with_data_ok()
@@ -43,8 +44,6 @@ class UserTest extends TestCase
 
     public function test_oauth_login_success()
     {
-        Artisan::call('db:seed', ['-vvv' => true]);
-
         $client = new Client();
 
         $response = $client->post(env('APP_URL') . 'oauth/token', [
@@ -57,6 +56,8 @@ class UserTest extends TestCase
                 'scope' => '*',
             ]
         ]);
+
+        var_dump($response->getBody()->getContents());
 
         $this->assertEquals(200, $response->getStatusCode());
     }
