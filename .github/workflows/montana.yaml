@@ -43,7 +43,7 @@ jobs:
         run: php artisan migrate --database=mysql
 
       - name: Install Passport
-        run: php artisan passport:install --database=mysql
+        run: php artisan passport:install
 
       - name: Run Server
         run: |
