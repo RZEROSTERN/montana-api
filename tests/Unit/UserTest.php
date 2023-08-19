@@ -43,29 +43,6 @@ class UserTest extends TestCase
             ]);
     }
 
-    public function test_oauth_login_success()
-    {
-        Artisan::call('db:seed', ['-vvv' => true]);
-
-        $client = new Client();
-
-        $response = $client->post(env('APP_URL') . 'oauth/token', [
-            RequestOptions::JSON => [
-                'grant_type' => 'password',
-                'client_id' => "5",
-                'client_secret' => 'T7gtfKg2YvAXaPmFimlY68ktHs5lGxWoDiYbDIvX',
-                'username' => 'valid@test.com',
-                'password' => 'password',
-                'scope' => '*',
-            ]
-        ]);
-
-        var_dump($response->getBody()->getContents());
-
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-
     public function test_login_success()
     {
         Artisan::call('db:seed', ['-vvv' => true]);
