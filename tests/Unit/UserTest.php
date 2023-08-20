@@ -123,4 +123,16 @@ class UserTest extends TestCase
 
         $response->assertStatus(400);
     }
+
+    public function test_obtain_profile_not_found()
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('TestToken')->accessToken;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get('/api/user/profile');
+
+        $response->assertStatus(404);
+    }
 }
