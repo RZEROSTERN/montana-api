@@ -12,4 +12,6 @@ Route::group(['middleware' => ['CheckClientCredentials', 'auth:api']], function 
     Route::post('logout', 'App\Http\Controllers\Api\Users\UserController@logout');
     Route::get('/user/profile', 'App\Http\Controllers\Api\Users\UserController@profile');
     Route::post('/user/profile', 'App\Http\Controllers\Api\Users\UserController@createProfile');
+
+    Route::post('/teams', 'App\Http\Controllers\Api\Teams\TeamsController@createTeam');
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Teams;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Team;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class TeamsController extends Controller
@@ -12,7 +13,7 @@ class TeamsController extends Controller
     public function createTeam(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'team_name' => 'required|unique',
+            'team_name' => 'required|unique:teams,team_name',
             'foundation_date' => 'required',
         ]);
 
@@ -20,7 +21,13 @@ class TeamsController extends Controller
             return response()->json(['success' => false, 'error' => $validator->errors()], $this->badRequestStatus);
         }
 
-        $data = $request->all();
+        $user = Auth::user();
+
+        $data = [
+            'captain_user_id' => $user->id,
+        ];
+
+        $data = array_merge($data, $request->all());
 
         // Workflow for uploading pictures
 

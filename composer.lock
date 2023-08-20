@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aed280c806b24b0bd3dd37720b70da39",
+    "content-hash": "3a00dfc38624c9772f357a6038f15265",
     "packages": [
         {
             "name": "brick/math",
@@ -2722,6 +2722,47 @@
                 }
             ],
             "time": "2021-06-28T04:27:21+00:00"
+        },
+        {
+            "name": "lonniecoffman/faker-team-names",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LonnieCoffman/faker-team-names.git",
+                "reference": "a513e0a0cb814e059cc6c8d7eeb482fda84d9c58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LonnieCoffman/faker-team-names/zipball/a513e0a0cb814e059cc6c8d7eeb482fda84d9c58",
+                "reference": "a513e0a0cb814e059cc6c8d7eeb482fda84d9c58",
+                "shasum": ""
+            },
+            "require": {
+                "fakerphp/faker": "^1.13",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TeamNameGenerator\\": "src/TeamNameGenerator/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lonnie Coffman",
+                    "email": "lonniecoffman@icloud.com"
+                }
+            ],
+            "description": "generates fake team names",
+            "support": {
+                "issues": "https://github.com/LonnieCoffman/faker-team-names/issues",
+                "source": "https://github.com/LonnieCoffman/faker-team-names/tree/1.0"
+            },
+            "time": "2021-03-11T18:11:12+00:00"
         },
         {
             "name": "monolog/monolog",
