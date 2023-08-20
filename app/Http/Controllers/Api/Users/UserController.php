@@ -88,21 +88,26 @@ class UserController extends Controller
             }
 
             $user = Auth::user();
-            $profile = Profile::where(['user_id' => $user->id])->get();
+            $profile = Profile::where(['user_id' => $user->id])->first();
 
-            $data = $request->all();
+            $data = [
+                'user_id' => $user->id,
+            ];
+
+            $dataInsert = array_merge($data, $request->all());
 
             // Detect when an image is uploaded
 
             if (null !== $profile) {
-                $profile = $profile->update($data);
+                $profile = $profile->update($dataInsert);
             } else {
-                $profile = Profile::create($data);
+                $profile = Profile::create($dataInsert);
             }
 
 
             return response()->json(["success" => true, "message" => 'Perfil actualizado correctamente.'], $this->successStatus);
         } catch (QueryException $e) {
+            var_dump($e->getMessage());
             return response()->json(["success" => false, "message" => 'Error al actualizar el perfil.'], $this->internalServerErrorStatus);
         }
     }

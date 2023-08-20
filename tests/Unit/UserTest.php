@@ -5,8 +5,6 @@ namespace Tests\Unit;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use App\Models\User;
-use Laravel\Passport\Passport;
-use Laravel\Passport\Token;
 
 class UserTest extends TestCase
 {
@@ -105,7 +103,6 @@ class UserTest extends TestCase
         ];
 
         $user = User::factory()->create();
-
         $token = $user->createToken('TestToken')->accessToken;
 
         $response = $this->withHeaders([
