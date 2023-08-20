@@ -106,8 +106,8 @@ class UserTest extends TestCase
 
         $user = User::factory()->create();
 
-        $user = Passport::actingAs($user, ['*'], 'api');
-        var_dump($user);
+        $token = $user->createToken('TestToken')->accessToken;
+        var_dump($token);
 
         $response = $this->post('/api/user/profile', $body);
 
