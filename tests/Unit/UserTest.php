@@ -107,9 +107,10 @@ class UserTest extends TestCase
         $user = User::factory()->create();
 
         $token = $user->createToken('TestToken')->accessToken;
-        var_dump($token);
 
-        $response = $this->post('/api/user/profile', $body);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->post('/api/user/profile', $body);
 
         $response->assertStatus(200);
     }
