@@ -39,4 +39,11 @@ class TeamsController extends Controller
             return response()->json(['success' => false, 'message' => 'Error al crear el equipo.'], $this->internalServerErrorStatus);
         }
     }
+
+    public function getTeamsByUser()
+    {
+        $user = Auth::user();
+        $teams = Team::where(['captain_user_id' => $user->id])->get();
+        return response()->json(['success' => true, 'data' => $teams], 200);
+    }
 }

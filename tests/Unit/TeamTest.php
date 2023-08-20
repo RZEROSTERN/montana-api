@@ -23,6 +23,7 @@ class TeamTest extends TestCase
         $body = [
             'team_name' => 'Team Rex',
             'foundation_date' => '2023-08-19',
+            'brochure' => 'Lorem ipsum dolor sit amet',
         ];
 
         $user = User::factory()->create();
@@ -31,6 +32,18 @@ class TeamTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->post('/api/teams', $body);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_get_teams(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('TestToken')->accessToken;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get('/api/teams');
 
         $response->assertStatus(200);
     }
