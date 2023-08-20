@@ -36,7 +36,7 @@ class TeamTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_get_teams(): void
+    public function test_get_teams_by_captain(): void
     {
         $user = User::factory()->create();
         $token = $user->createToken('TestToken')->accessToken;
@@ -44,6 +44,28 @@ class TeamTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->get('/api/teams');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_get_team(): void
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('TestToken')->accessToken;
+
+        $body = [
+            'team_name' => 'Team Rex',
+            'foundation_date' => '2023-08-19',
+            'brochure' => 'Lorem ipsum dolor sit amet',
+        ];
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->post('/api/teams', $body);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get('/api/teams/1');
 
         $response->assertStatus(200);
     }

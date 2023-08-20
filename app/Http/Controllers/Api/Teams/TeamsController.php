@@ -46,4 +46,15 @@ class TeamsController extends Controller
         $teams = Team::where(['captain_user_id' => $user->id])->get();
         return response()->json(['success' => true, 'data' => $teams], 200);
     }
+
+    public function getTeamById($id)
+    {
+        $team = Team::where(['id' => $id])->get();
+
+        if (null !== $team) {
+            return response()->json(['success' => true, 'data' => $team], 200);
+        } else {
+            return response()->json(['success' => false, 'message' => 'No se encontró el equipo.'], 404);
+        }
+    }
 }
