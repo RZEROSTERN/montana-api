@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use App\Models\User;
 use Laravel\Passport\Passport;
+use Laravel\Passport\Token;
 
 class UserTest extends TestCase
 {
@@ -104,9 +105,10 @@ class UserTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        // Passport::actingAs($user);
 
-        $response = $this->actingAs($user)->post('/api/user/profile', $body);
+        Passport::actingAs($user, ['*'], 'api');
+
+        $response = $this->post('/api/user/profile', $body);
 
         $response->assertStatus(200);
     }
