@@ -5,8 +5,7 @@ namespace Tests\Unit;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use App\Models\User;
-use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
+use Laravel\Passport\Passport;
 
 class UserTest extends TestCase
 {
@@ -89,5 +88,26 @@ class UserTest extends TestCase
         $responseRefresh->assertStatus(200)->assertJson([
             'success' => true
         ]);
+    }
+
+    public function test_register_profile_success()
+    {
+        $body = [
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'birth_date' => '1987-10-10',
+            'bloodtype' => 1,
+            'phone' => $this->faker->phoneNumber,
+            'gender' => 1,
+            'country' => 1,
+            'state' => 1,
+        ];
+
+        $user = User::factory()->create();
+        // Passport::actingAs($user);
+
+        $response = $this->actingAs($user)->post('/api/user/profile', $body);
+
+        $response->assertStatus(200);
     }
 }
