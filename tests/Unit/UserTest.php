@@ -135,4 +135,31 @@ class UserTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_register_profile_and_obtain()
+    {
+        $body = [
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'birth_date' => '1987-10-10',
+            'bloodtype' => 1,
+            'phone' => $this->faker->phoneNumber,
+            'gender' => 1,
+            'country' => 1,
+            'state' => 1,
+        ];
+
+        $user = User::factory()->create();
+        $token = $user->createToken('TestToken')->accessToken;
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->post('/api/user/profile', $body);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get('/api/user/profile');
+
+        $response->assertStatus(200);
+    }
 }
