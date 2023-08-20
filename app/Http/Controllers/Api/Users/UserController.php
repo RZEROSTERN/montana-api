@@ -60,7 +60,7 @@ class UserController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        $profile = Profile::id($user->id);
+        $profile = Profile::find($user->id);
 
         if (null !== $profile) {
             return response()->json(["success" => true, "data" => $user], $this->successStatus);
