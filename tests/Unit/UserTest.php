@@ -111,4 +111,16 @@ class UserTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_register_profile_validation_failed()
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('TestToken')->accessToken;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->post('/api/user/profile', []);
+
+        $response->assertStatus(400);
+    }
 }
