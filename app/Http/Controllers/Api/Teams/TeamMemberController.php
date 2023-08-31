@@ -11,6 +11,12 @@ use Validator;
 
 class TeamMemberController extends Controller
 {
+    public function getTeamMembers($id)
+    {
+        $teamMembers = TeamMember::where(['team_id' => $id])->get();
+        return response()->json(['success' => true, 'members' => $teamMembers], $this->successStatus);
+    }
+
     public function addUserToTeam(Request $request)
     {
         $validator = Validator::make($request->all(), [

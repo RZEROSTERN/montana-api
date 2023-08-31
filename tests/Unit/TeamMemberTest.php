@@ -3,8 +3,6 @@
 namespace Tests\Unit;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
@@ -27,6 +25,28 @@ class TeamMemberTest extends TestCase
 
         Artisan::call('migrate:fresh', ['-vvv' => true]);
         Artisan::call('passport:install', ['-vvv' => true]);
+    }
+
+    public function test_get_team_members(): void
+    {
+        $body = [
+            'team_name' => 'Team Rex',
+            'foundation_date' => '2023-08-19',
+            'brochure' => 'Lorem ipsum dolor sit amet',
+        ];
+
+        $user = User::factory()->create();
+        $token = $user->createToken('TestToken')->accessToken;
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->post('/api/teams', $body);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get('/api/teams/1/members');
+
+        $response->assertStatus(200);
     }
 
     public function test_add_member_to_team(): void

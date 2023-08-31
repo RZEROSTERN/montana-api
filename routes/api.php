@@ -19,6 +19,7 @@ Route::group(['middleware' => ['CheckClientCredentials', 'auth:api']], function 
     Route::put('/teams/{id}', 'App\Http\Controllers\Api\Teams\TeamsController@updateTeam');
     Route::delete('/teams/{id}', 'App\Http\Controllers\Api\Teams\TeamsController@deleteTeam');
 
+    Route::get('/teams/{id}/members', 'App\Http\Controllers\Api\Teams\TeamMemberController@getTeamMembers');
     Route::post('/teams/members/add', 'App\Http\Controllers\Api\Teams\TeamMemberController@addUserToTeam');
     Route::post('/teams/members/drop', 'App\Http\Controllers\Api\Teams\TeamMemberController@dropUserFromTeam');
 });
