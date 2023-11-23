@@ -24,4 +24,7 @@ Route::group(['middleware' => ['CheckClientCredentials', 'auth:api']], function 
     Route::post('/teams/members/drop', 'App\Http\Controllers\Api\Teams\TeamMemberController@dropUserFromTeam');
 
     Route::get('/leagues', 'App\Http\Controllers\Api\Leagues\LeaguesController@getAllLeagues');
+    Route::post('/leagues', 'App\Http\Controllers\Api\Leagues\LeaguesController@createLeague');
+    Route::put('/leagues', 'App\Http\Controllers\Api\Leagues\LeaguesController@updateLeague');
+    Route::delete('/leagues', 'App\Http\Controllers\Api\Leagues\LeaguesController@deleteLeague');
 });
