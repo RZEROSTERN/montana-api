@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Api\Teams;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Team;
 use App\Models\TeamMember;
-use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class TeamMemberController extends Controller
