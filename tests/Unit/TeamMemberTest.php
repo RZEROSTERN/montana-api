@@ -24,7 +24,6 @@ class TeamMemberTest extends TestCase
         $this->email = $this->faker->email();
 
         Artisan::call('migrate:fresh', ['-vvv' => true]);
-        Artisan::call('passport:install', ['-vvv' => true]);
     }
 
     public function test_get_team_members(): void
@@ -36,7 +35,7 @@ class TeamMemberTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -58,7 +57,7 @@ class TeamMemberTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -94,7 +93,7 @@ class TeamMemberTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,

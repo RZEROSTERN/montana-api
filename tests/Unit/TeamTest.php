@@ -11,9 +11,7 @@ class TeamTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
         Artisan::call('migrate:fresh', ['-vvv' => true]);
-        Artisan::call('passport:install', ['-vvv' => true]);
     }
 
     public function test_create_team(): void
@@ -25,7 +23,7 @@ class TeamTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -37,7 +35,7 @@ class TeamTest extends TestCase
     public function test_get_teams_by_captain(): void
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -49,7 +47,7 @@ class TeamTest extends TestCase
     public function test_get_team(): void
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $body = [
             'team_name' => 'Team Rex',
@@ -71,7 +69,7 @@ class TeamTest extends TestCase
     public function test_update_team(): void
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $body = [
             'team_name' => 'Team Rex',
@@ -99,7 +97,7 @@ class TeamTest extends TestCase
     public function test_delete_team(): void
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $body = [
             'team_name' => 'Team Rex',

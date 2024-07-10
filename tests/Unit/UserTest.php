@@ -12,6 +12,7 @@ class UserTest extends TestCase
     public $name;
     public $email;
     public $password;
+    public $deviceId;
 
     public function setUp(): void
     {
@@ -21,9 +22,10 @@ class UserTest extends TestCase
         $this->name = $this->faker->name();
         $this->password = 'password';
         $this->email = 'valid@test.com';
+        $this->deviceId = $this->faker->uuid();
 
         Artisan::call('migrate:fresh', ['-vvv' => true]);
-        Artisan::call('passport:install', ['-vvv' => true]);
+        Artisan::call('install:api', ['-vvv', true]);
     }
 
     public function test_login_error_with_data_ok()
@@ -32,7 +34,8 @@ class UserTest extends TestCase
 
         $body =  [
             'email' => 'invalid@test.com',
-            'password' => 'password'
+            'password' => 'password',
+            'device_id' => $this->deviceId
         ];
 
         $this->json('POST', '/api/login', $body)
@@ -47,7 +50,8 @@ class UserTest extends TestCase
 
         $body = [
             'email' => 'valid@test.com',
-            'password' => 'password'
+            'password' => 'password',
+            'device_id' => $this->deviceId
         ];
 
         $this->json('POST', '/api/login', $body, ['Accept' => 'application/json'])
@@ -62,31 +66,14 @@ class UserTest extends TestCase
             'name' => $this->name,
             'email' => $this->email,
             'password' => $this->password,
-            'c_password' => $this->password
+            'c_password' => $this->password,
+            'device_id' => $this->deviceId
         ];
 
         $this->json('POST', '/api/register', $body)
             ->assertStatus(200)->assertJson([
                 "success" => true
             ]);
-    }
-
-    public function test_refresh_token()
-    {
-        Artisan::call('db:seed', ['-vvv' => true]);
-
-        $response = $this->postJson('/api/login', [
-            'email' => 'valid@test.com',
-            'password' => 'password'
-        ], ['Accept' => 'application/json']);
-
-        $responseRefresh = $this->withHeaders([
-            'Refreshtoken' => $response['refresh_token']
-        ])->postJson('/api/refreshtoken');
-
-        $responseRefresh->assertStatus(200)->assertJson([
-            'success' => true
-        ]);
     }
 
     public function test_register_profile_success()
@@ -103,7 +90,7 @@ class UserTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -115,7 +102,7 @@ class UserTest extends TestCase
     public function test_register_profile_validation_failed()
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -127,7 +114,7 @@ class UserTest extends TestCase
     public function test_obtain_profile_not_found()
     {
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -150,7 +137,7 @@ class UserTest extends TestCase
         ];
 
         $user = User::factory()->create();
-        $token = $user->createToken('TestToken')->accessToken;
+        $token = $user->createToken('TestToken')->plainTextToken;
 
         $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,

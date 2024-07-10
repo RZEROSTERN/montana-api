@@ -3,24 +3,29 @@
 namespace App\Http\Controllers\Api\Users;
 
 use App\Models\User;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\Client as OClient;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
 use App\Models\Profile;
 use Illuminate\Database\QueryException;
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\RequestOptions;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function login()
+    public function login(Request $request)
     {
-        $result = $this->getTokenAndRefreshToken(request(), request('email'), request('password'));
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+            'device_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'error' => $validator->errors()], $this->badRequestStatus);
+        }
+
+        $result = $this->getToken(request('email'), request('password'), request('device_id'));
 
         if ($result['success'] == true) {
             return response()->json($result, $this->successStatus);
@@ -35,6 +40,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required',
             'c_password' => 'required|same:password',
+            'device_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +53,7 @@ class UserController extends Controller
         $user = User::create($input);
 
         if (null !== $user) {
-            $result = $this->getTokenAndRefreshToken($request, $user->email, $password);
+            $result = $this->getToken($user->email, $password, $request->device_id);
 
             if ($result['success'] == true) {
                 return response()->json($result, $this->successStatus);
@@ -112,49 +118,6 @@ class UserController extends Controller
         }
     }
 
-    public function refreshToken(Request $request)
-    {
-        $oClient = OClient::where('password_client', 1)->first();
-
-        $body = [
-            'grant_type' => 'refresh_token',
-            'refresh_token' => $request->header('Refreshtoken'),
-            'client_id' => $oClient->id,
-            'client_secret' => $oClient->secret,
-            'scope' => '*',
-        ];
-
-        if (App::runningUnitTests()) {
-            $client = new HttpClient();
-
-            try {
-                $response = $client->post(env('APP_URL') . 'oauth/token', [
-                    RequestOptions::JSON => $body,
-                ]);
-
-                if ($response->getStatusCode() == 200) {
-                    $result = json_decode((string) $response->getBody()->getContents(), true);
-                    $result['success'] = true;
-                } else {
-                    $result['success'] = false;
-                }
-
-                return $result;
-            } catch (RequestException $e) {
-                $result['success'] = false;
-                $result['message'] = "Access denied";
-                return $result;
-            }
-        } else {
-            $request->request->add($body);
-            $proxy = Request::create('oauth/token', 'POST', $body);
-            $response = Route::dispatch($proxy);
-
-            $oauthResponse = json_decode($response->getContent(), true);
-            return response()->json(['success' => true, 'access_token' => $oauthResponse['access_token'], 'refresh_token' => $oauthResponse['refresh_token']], $this->successStatus);
-        }
-    }
-
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
@@ -169,49 +132,17 @@ class UserController extends Controller
         return response()->json(["Success" => false, "message" => "Unauthorized"], 401);
     }
 
-    private function getTokenAndRefreshToken($request, $email, $password)
+    private function getToken($email, $password, $deviceID)
     {
-        $oClient = OClient::where('password_client', 1)->first();
+        $user = User::where('email', $email)->first();
 
-        $body = [
-            'grant_type' => 'password',
-            'client_id' => $oClient->id,
-            'client_secret' => $oClient->secret,
-            'username' => $email,
-            'password' => $password,
-            'scope' => '*',
-        ];
-
-        if (App::runningUnitTests()) {
-            $client = new HttpClient();
-
-            try {
-                $response = $client->post(env('APP_URL') . 'oauth/token', [
-                    RequestOptions::JSON => $body,
-                ]);
-
-                if ($response->getStatusCode() == 200) {
-                    $result = json_decode((string) $response->getBody()->getContents(), true);
-                    $result['success'] = true;
-                } else {
-                    $result['success'] = false;
-                }
-
-                return $result;
-            } catch (RequestException $e) {
-                $result['success'] = false;
-                $result['message'] = "Access denied";
-                return $result;
-            }
-        } else {
-            $request->request->add($body);
-            $proxy = Request::create('oauth/token', 'POST', $body);
-            $response = Route::dispatch($proxy);
-
-            $result = json_decode((string) $response->getContent(), true);
-            $result['success'] = (isset($result['error'])) ? false : true;
-
-            return $result;
+        if (!$user || !Hash::check($password, $user->password)) {
+            return ['success' => false, 'message' => 'Correo electrónico o contraseña incorrectas'];
         }
+
+        return [
+            'success' => true,
+            'access_token' => $user->createToken($deviceID)->plainTextToken
+        ];
     }
 }
