@@ -25,7 +25,6 @@ class UserTest extends TestCase
         $this->deviceId = $this->faker->uuid();
 
         Artisan::call('migrate:fresh', ['-vvv' => true]);
-        Artisan::call('install:api', ['-vvv', true]);
     }
 
     public function test_login_error_with_data_ok()
