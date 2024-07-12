@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('team_logo')->nullable();
             $table->dateTime('foundation_date');
             $table->string('brochure')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->softDeletes();
         });
     }

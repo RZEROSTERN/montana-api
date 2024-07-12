@@ -9,4 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class League extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public function tournaments()
+    {
+        $this->hasMany(Tournament::class, 'league_id', 'id');
+    }
 }
